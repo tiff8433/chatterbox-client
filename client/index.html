@@ -7,6 +7,7 @@
 
     <!-- dependencies -->
     <script src="bower_components/jquery/jquery.min.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
     <!-- your scripts -->
     <script src="env/config.js"></script>
     <script src="scripts/app.js"></script>
@@ -15,6 +16,19 @@
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
+      <form>
+        Select a chatroom: <br>
+        <select id= "roomsList" name="roomlist" form="room">
+        </select>
+        <br>
+        Or create a new one: <br>
+        <input id="newRoom" type="text" name=""> <br>
+        Type your message: <br>
+          <input id="messageText" type="text" name="">
+          <input id="formSubmit" type="submit" value="submit">
+      </form>
+      <br>
+      <div id="messageDisplay"></div>
     </div>
   </body>
 </html>
