@@ -101,10 +101,5 @@ $(document).ready( function(){
   });
 });
 
-// var message = {
-//   username: 'shawndrost',
-//   text: 'trololo',
-//   roomname: '4chan'
-// };
 
 

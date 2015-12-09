@@ -18,9 +18,11 @@ $(document).ready( function(){
     app.clearMessages();
     app.fetch(message);
   });
+  
 });
 
 var app = {
+  friends: {},
   roomsList: [],
   roomMessages: [],
   server: 'https://api.parse.com/1/classes/chatterbox',
@@ -87,8 +89,22 @@ var app = {
         app.roomMessages.push(data.results[i]);
       }
       for(var i = 0; i < app.roomMessages.length; i++){
-      $('#chats').append('<h5>' + app.escapeHTML(app.roomMessages[i].username) + ': </h5><p>' + app.escapeHTML(app.roomMessages[i].text) + '</p>')
-    };
+        var found = false;
+        for (var key in app.friends){
+          if(app.friends[app.roomMessages[i].username] === true) {
+            found = true;
+          }
+        }
+          if(found === true){
+            $('#chats').append('<a href = "" data ='+app.roomMessages[i].username+'>' + app.escapeHTML(app.roomMessages[i].username) + ': </a><p class="friend">' + app.escapeHTML(app.roomMessages[i].text) + '</p>');
+          } else {
+            $('#chats').append('<a href = "" data ='+app.roomMessages[i].username+'>' + app.escapeHTML(app.roomMessages[i].username) + ': </a><p>' + app.escapeHTML(app.roomMessages[i].text) + '</p>')
+          }
+      }
+      $('a').on('click', function(){
+        event.preventDefault();
+        app.addFriend($(this).attr('data'));
+      });
     },
     error: function (data) {
       console.error('chatterbox: Failed to recieve. Error: ', data);
@@ -105,7 +121,12 @@ var app = {
   addRoom: function(){
 
   },
-  addFriend: function(){},
+  addFriend: function(friend){
+    app.friends[friend] = true;
+    app.clearMessages();
+    app.fetch(message);
+    // $('#chats').children().attr('data', friend).addClass('friend');
+  },
   escapeHTML: function(text){
     'use strict';
     return text.replace(/[\"&<>]/g, function (a) {
