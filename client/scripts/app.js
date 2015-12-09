@@ -41,7 +41,7 @@ var app = {
               }
             }
             if (exists === false){
-              app.roomsList.push(data.results[i].roomname);
+              app.roomsList.push(app.escapeHTML(data.results[i].roomname));
             }
           }
         }
@@ -87,7 +87,7 @@ var app = {
         app.roomMessages.push(data.results[i]);
       }
       for(var i = 0; i < app.roomMessages.length; i++){
-      $('#chats').append('<h5>' + app.roomMessages[i].username + ': </h5><p>' + app.roomMessages[i].text + '</p>')
+      $('#chats').append('<h5>' + app.escapeHTML(app.roomMessages[i].username) + ': </h5><p>' + app.escapeHTML(app.roomMessages[i].text) + '</p>')
     };
     },
     error: function (data) {
@@ -105,7 +105,13 @@ var app = {
   addRoom: function(){
 
   },
-  addFriend: function(){}
+  addFriend: function(){},
+  escapeHTML: function(text){
+    'use strict';
+    return text.replace(/[\"&<>]/g, function (a) {
+        return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+    });
+  }
 };
 
 app.init();
