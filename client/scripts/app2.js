@@ -1,35 +1,15 @@
-var message = {
-  username: 'shawndrost',
-  text: 'trololo',
-  roomname: '4chan'
-};
-
-$(document).ready( function(){
-  $('form').on('submit', function(){
-    event.preventDefault();
-    message.text = document.getElementById('messageText').value;
-    message.username = window.location.search.substr(10);
-    if (document.getElementById('newRoom') && document.getElementById('newRoom').value){
-      message.roomname = document.getElementById('newRoom').value;
-    } else {
-      message.roomname = document.getElementById('roomsList').value;
-    }
-    app.addMessage(message);
-    app.clearMessages();
-    app.fetch(message);
-  });
-});
+var message = {};
 
 var app = {
   roomsList: [],
   roomMessages: [],
   server: 'https://api.parse.com/1/classes/chatterbox',
-   init: function(){
+  init: function(){
     $.ajax({
     url: 'https://api.parse.com/1/classes/chatterbox',
     type: 'GET',
     contentType: 'application/json',
-    data: 'order=-createdAt',
+    //data: JSON.stringify(message),
     success: function (data) {
       console.log('chatterbox: Info recieved. Data: ', data);
         for (var i = 0; i < data.results.length; i++){
@@ -48,12 +28,6 @@ var app = {
         for(var j = 0; j < app.roomsList.length; j++){
           $('#roomsList').append('<option value="' + app.roomsList[j] + '">' + app.roomsList[j] + '</option>');
         }  
-        $('#roomsList').append('<option id="newRoomOption" value="x">New Room...</option>');
-        $('#roomsList').change(function(){
-          if($(this).val() === "x"){
-            $('#rooms').after('<br><input id="newRoom" type="text" placeholder="new room name here...">');
-          }
-        });
     },
     error: function (data) {
       console.error('chatterbox: Failed to recieve. Error: ', data);
@@ -62,7 +36,7 @@ var app = {
   },
   send: function(message){
     $.ajax({
-      url: app.server,
+      url: 'https://api.parse.com/1/classes/chatterbox',
       type: 'POST',
       data: JSON.stringify(message),
       contentType: 'application/json',
@@ -75,20 +49,20 @@ var app = {
     });
   },
   fetch: function(message){
-    //console.log(message);
     $.ajax({
-    url: app.server,
+    url: 'https://api.parse.com/1/classes/chatterbox',
     type: 'GET',
-    data: 'where={"roomname":"'+message.roomname+'"}',
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Info recieved. Data: ', data);
       for(var i = 0; i < data.results.length; i++){
-        app.roomMessages.push(data.results[i]);
+        if(data.results[i].roomname ===  message.roomname){
+          app.roomMessages.push(data.results[i]);
+        }
       }
-      for(var i = 0; i < app.roomMessages.length; i++){
-      $('#chats').append('<h5>' + app.roomMessages[i].username + ': </h5><p>' + app.roomMessages[i].text + '</p>')
-    };
+      console.log(app.roomMessages);
+     // app.clearMessages();
+      app.addMessage();
     },
     error: function (data) {
       console.error('chatterbox: Failed to recieve. Error: ', data);
@@ -96,16 +70,41 @@ var app = {
   });
   },
   clearMessages: function(){
-     app.roomMessages = [];
+    app.roomMessages = [];
+    //document.getElementById('chats').innerHTML = '';
     $('#chats').empty();
   },
-  addMessage: function(message){
-  app.send(message);
+  addMessage: function(){
+    for(var i = 0; i < app.roomMessages.length; i++){
+      $('#chats').append('<h5>' + app.roomMessages[i].username + ': </h5><p>' + app.roomMessages[i].text + '</p>')
+    };
   },
-  addRoom: function(){
-
-  },
+  addRoom: function(){},
   addFriend: function(){}
 };
 
 app.init();
+$(document).ready( function(){
+  $('form').on('submit', function(){
+    event.preventDefault();
+    message.text = document.getElementById('messageText').value;
+    message.username = 'anonymous';
+    if (document.getElementById('newRoom').value){
+      message.roomname = document.getElementById('newRoom').value;
+    } else {
+      message.roomname = document.getElementById('roomsList').value;
+    }
+    app.send(message);
+    app.clearMessages();
+    app.fetch(message);
+    console.log(message);
+  });
+});
+
+// var message = {
+//   username: 'shawndrost',
+//   text: 'trololo',
+//   roomname: '4chan'
+// };
+
+
