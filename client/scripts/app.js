@@ -130,9 +130,13 @@ $(document).ready(function(){
         var $chat = $('<div class="chat" />');
         var $username = $('<span class="username" />');
         $username.text(data.username + ': ')
-        .attr('data-username', data.username)
-        .attr('data-roomname', data.roomname)
-        .appendTo($chat);
+          .attr('data-username', data.username)
+          .attr('data-roomname', data.roomname)
+          .appendTo($chat);
+
+          if ( app.friends[data.username] === true){
+            $username.addClass('friend');
+          }
 
         var $message = $('<br /><span />');
         $message.text(data.text)
