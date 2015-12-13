@@ -6,6 +6,7 @@ $(document).ready(function(){
     server: 'https://api.parse.com/1/classes/chatterbox',
     username: 'anonymous',
     roomname: 'lobby',
+    friends: {},
 
     init: function(){
       app.username = window.location.search.substr(10);
@@ -18,6 +19,7 @@ $(document).ready(function(){
 
       app.$roomSelect.on('change', app.saveRoom);
       app.$send.on('submit', app.handleSubmit);
+      app.$main.on('click', '.username', app.addFriend);
       app.stopSpinner();
       app.fetch();
 
@@ -145,7 +147,15 @@ $(document).ready(function(){
       app.$roomSelect.append($option);
     },
 
-    addFriend: function() {},
+    addFriend: function(e) {
+      var username = $(e.currentTarget).attr('data-username');
+      if ( username !== undefined ) {
+        console.log('chatbox: adding %s as a afriend', username);
+        app.friends[username] = true;
+        var selector = '[data-username="'+username.replace(/"/g, '\\\"')+'"]';
+        var $usernames = $(selector).addClass('friend');
+      }
+    },
 
     handleSubmit: function(e) {
       e.preventDefault();
