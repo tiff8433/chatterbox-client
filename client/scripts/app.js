@@ -17,6 +17,7 @@ $(document).ready(function(){
       app.$send = $('#send');
 
       app.$roomSelect.on('change', app.saveRoom);
+      app.$send.on('submit', app.handleSubmit);
       app.stopSpinner();
       app.fetch();
 
@@ -31,6 +32,8 @@ $(document).ready(function(){
         if(roomname){
           app.roomname = roomname;
           app.addRoom(roomname);
+          app.$roomSelect.val(roomname);
+          app.fetch();
         }
       } else {
         app.roomname = app.$roomSelect.val();
@@ -38,17 +41,21 @@ $(document).ready(function(){
       }
     },
 
-    send: function(message) {
+    send: function(data) {
+      app.startSpinner();
       $.ajax({
         url: app.server,
         type: 'POST',
-        data: JSON.stringify(message),
+        data: JSON.stringify(data),
         contentType: 'application/json',
-        success: function(data){
-          console.log('chatterbox: Message sent. Data: ', data);
+        success: function(result){
+          app.fetch()
         },
-        error: function(data){
-          console.error('chatterbox: Failed to send message. Error: ', data);
+        error: function(reason){
+          console.erro('Failed to fetch data: ', reason);
+        }, 
+        complete: function(){
+          app.stopSpinner();
         }
       });
     },
@@ -85,6 +92,10 @@ $(document).ready(function(){
       app.$roomSelect.html('<option value="__newRoom">New Room...</option><option value="lobby" selected>Lobby</option>');
       if(results) {
         var processedRooms = {};
+        if(app.roomname !== 'lobby'){
+          app.addRoom(app.roomname);
+          processedRooms[app.roomname] = true;
+        }
         results.forEach(function(data){
           var roomname = data.roomname;
           if( roomname && !processedRooms[roomname]) {
@@ -136,7 +147,15 @@ $(document).ready(function(){
 
     addFriend: function() {},
 
-    handleSubmit: function() {}
+    handleSubmit: function(e) {
+      e.preventDefault();
+      var message = {
+        username: app.username,
+        roomname: app.roomname || 'lobby',
+        text: app.$message.val()
+      }
+      app.send(message);
+    }
   }
 
 
